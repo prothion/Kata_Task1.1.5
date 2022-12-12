@@ -12,18 +12,17 @@ import org.hibernate.mapping.PersistentClass;
 import org.hibernate.service.ServiceRegistry;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 public class Util {
     // реализуйте настройку соеденения с БД
     private static Connection conn;
+    private static String url = "jdbc:mysql://localhost:3306/task1.4";
+    private static String username = "admin";
+    private static String password = "admin";
     private static SessionFactory sessionFactory;
     private static Metadata metadata;
 
@@ -33,23 +32,12 @@ public class Util {
     public static Connection getConnection() throws SQLException {
         if (null == conn || conn.isClosed()) {
             try {
-                Properties props = getProperties();
-                conn = DriverManager.getConnection(props.getProperty("db.url"), props.getProperty("db.username"), props.getProperty("db.password"));
-            } catch (SQLException | IOException e) {
+                conn = DriverManager.getConnection(url, username, password);
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
         return conn;
-    }
-
-    private static Properties getProperties() throws IOException {
-        Properties properties = new Properties();
-        try (InputStream openStr = Files.newInputStream(Paths.get(Util.class.getResource("/prop.properties").toURI()))) {
-            properties.load(openStr);
-            return properties;
-        } catch (IOException | URISyntaxException e) {
-            throw new IOException("Не найден properties файл!", e);
-        }
     }
 
     public static SessionFactory getSessionFactory() throws HibernateException {
@@ -81,5 +69,11 @@ public class Util {
             }
         }
         throw new NullPointerException(String.format("Entity {%s} not found", entityName));
+    }
+    
+    public static void closeConnection() {
+        if (null != sessionFactory) {
+            sessionFactory.close();
+        }
     }
 }
