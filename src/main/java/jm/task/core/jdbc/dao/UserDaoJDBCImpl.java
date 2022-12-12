@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    private static final Connection conn = Util.getInstance().getConnection();
+    private static final Connection conn = null;
 
     public UserDaoJDBCImpl() {
     }
